@@ -17,9 +17,11 @@ class CustomerRepository(private val context: Context) {
         val cached = dao.getCustomers()
         val isFresh = cached.isNotEmpty() && !cached[0].cachedAt.isExpired(CACHE_TTL_MS)
         
-        return if (isFresh && page == 0) {
-            cached.map { it.toDomain() }
-        } else {
+        if (isFresh && page == 0) {
+            return cached.map { it.toDomain() }
+        }
+        
+        return try {
             val response = api.getUsers(limit = 30, skip = skip)
             val entities = response.users.map { user ->
                 val existing = dao.getCustomerById(user.id)
@@ -31,6 +33,12 @@ class CustomerRepository(private val context: Context) {
             if (page == 0) dao.deleteAll()
             dao.insertAll(entities)
             entities.map { it.toDomain() }
+        } catch (e: Exception) {
+            if (cached.isNotEmpty() && page == 0) {
+                cached.map { it.toDomain() }
+            } else {
+                throw e
+            }
         }
     }
 
