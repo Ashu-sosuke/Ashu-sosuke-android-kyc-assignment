@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -24,7 +27,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            DigitalBankTheme {
+            var isDarkTheme by rememberSaveable { mutableStateOf(true) }
+
+            DigitalBankTheme(darkTheme = isDarkTheme) {
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = "accounts") {
@@ -34,6 +39,8 @@ class MainActivity : ComponentActivity() {
                         )
                         AccountsScreen(
                             viewModel = accountsViewModel,
+                            isDarkTheme = isDarkTheme,
+                            onToggleTheme = { isDarkTheme = !isDarkTheme },
                             onNavigateToDetail = { customerId ->
                                 navController.navigate("detail/$customerId")
                             },
@@ -54,7 +61,6 @@ class MainActivity : ComponentActivity() {
                             factory = AccountDetailViewModel.factory(application)
                         )
 
-                        // Listen for returned selfie paths from camera screen
                         val selfiePathState by backStackEntry.savedStateHandle
                             .getStateFlow<String?>("selfie_path", null)
                             .collectAsStateWithLifecycle()

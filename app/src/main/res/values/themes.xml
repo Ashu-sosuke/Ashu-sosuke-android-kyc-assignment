@@ -2,7 +2,7 @@
 <resources>
     <!-- Base application theme. -->
     <style name="Theme.DigitalBank" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:statusBarColor">#0A1628</item>
-        <item name="android:windowBackground">#0A1628</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:windowBackground">#000000</item>
     </style>
 </resources>

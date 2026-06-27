@@ -17,10 +17,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +40,10 @@ import coil.compose.AsyncImage
 import com.digitalbank.model.Customer
 import com.digitalbank.model.KycStatus
 import com.digitalbank.ui.UiState
-import com.digitalbank.ui.theme.*
+import com.digitalbank.ui.theme.Amber
+import com.digitalbank.ui.theme.Emerald
+import com.digitalbank.ui.theme.Electric
+import com.digitalbank.ui.theme.Rose
 import com.digitalbank.util.maskIban
 import com.digitalbank.util.toIndianRupee
 import com.digitalbank.util.toInitials
@@ -51,6 +54,8 @@ import kotlinx.coroutines.flow.debounce
 @Composable
 fun AccountsScreen(
     viewModel: AccountsViewModel,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
     onNavigateToDetail: (Int) -> Unit,
     onNavigateToCamera: (Int) -> Unit
 ) {
@@ -76,7 +81,7 @@ fun AccountsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Navy900)
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 // Top header row
@@ -88,25 +93,25 @@ fun AccountsScreen(
                     Column {
                         Text(
                             text = "DigitalBank",
-                            color = White90,
+                            color = MaterialTheme.colorScheme.onBackground,
                             style = MaterialTheme.typography.titleLarge
                         )
                         Text(
                             text = "Relationship Manager",
-                            color = White50,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp)
                         )
                     }
                     IconButton(
-                        onClick = { /* Toggle Theme - always dark here */ },
+                        onClick = onToggleTheme,
                         modifier = Modifier
-                            .background(Navy800, CircleShape)
+                            .background(MaterialTheme.colorScheme.surface, CircleShape)
                             .size(40.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.DarkMode,
-                            contentDescription = "Theme",
-                            tint = Electric
+                            imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = "Toggle Theme",
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -121,15 +126,15 @@ fun AccountsScreen(
                         .fillMaxWidth()
                         .height(56.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(Navy700),
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     placeholder = {
-                        Text("Search customer or account...", color = White50)
+                        Text("Search customer or account...", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search",
-                            tint = White50
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     },
                     trailingIcon = {
@@ -138,18 +143,18 @@ fun AccountsScreen(
                                 Icon(
                                     imageVector = Icons.Default.Clear,
                                     contentDescription = "Clear",
-                                    tint = White50
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
                     },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Navy700,
-                        unfocusedContainerColor = Navy700,
-                        focusedTextColor = White90,
-                        unfocusedTextColor = White90,
-                        cursorColor = Electric,
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        cursorColor = MaterialTheme.colorScheme.primary,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
@@ -159,7 +164,7 @@ fun AccountsScreen(
                 )
             }
         },
-        containerColor = Navy900
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -231,11 +236,11 @@ fun AccountTypeChipsRow(
                 modifier = Modifier
                     .clip(RoundedCornerShape(50))
                     .clickable { onChipSelected(chip) },
-                color = if (isSelected) Electric else Navy700
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
             ) {
                 Text(
                     text = chip,
-                    color = if (isSelected) White90 else White50,
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     ),
@@ -253,20 +258,21 @@ fun TabRowSection(
 ) {
     TabRow(
         selectedTabIndex = selectedTab,
-        containerColor = Navy900,
-        contentColor = White90,
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         indicator = { tabPositions ->
             TabRowDefaults.SecondaryIndicator(
-                Modifier
-                    .tabIndicatorOffset(tabPositions[selectedTab])
-                    .width(24.dp)
-                    .height(3.dp)
-                    .clip(RoundedCornerShape(50)),
-                color = Electric
+                modifier = with(TabRowDefaults) {
+                    Modifier.tabIndicatorOffset(tabPositions[selectedTab])
+                }
+                .width(24.dp)
+                .height(3.dp)
+                .clip(RoundedCornerShape(50)),
+                color = MaterialTheme.colorScheme.primary
             )
         },
         divider = {
-            HorizontalDivider(color = CardStroke)
+            HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
         }
     ) {
         Tab(
@@ -276,7 +282,7 @@ fun TabRowSection(
                 Text(
                     "VERIFIED",
                     style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp),
-                    color = if (selectedTab == 0) White90 else White50
+                    color = if (selectedTab == 0) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         )
@@ -287,7 +293,7 @@ fun TabRowSection(
                 Text(
                     "PENDING",
                     style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp),
-                    color = if (selectedTab == 1) White90 else White50
+                    color = if (selectedTab == 1) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         )
@@ -303,7 +309,6 @@ fun CustomerGrid(
 ) {
     val listState = rememberLazyGridState()
 
-    // Trigger pagination when reaching end
     val shouldLoadMore = remember {
         derivedStateOf {
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
@@ -348,7 +353,7 @@ fun CustomerCard(
 ) {
     Card(
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, CardStroke),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier
@@ -359,7 +364,10 @@ fun CustomerCard(
             modifier = Modifier
                 .background(
                     Brush.verticalGradient(
-                        listOf(Navy800, Navy900)
+                        listOf(
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.background
+                        )
                     )
                 )
                 .padding(12.dp)
@@ -368,7 +376,6 @@ fun CustomerCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
-                // Top row with status badge
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
@@ -381,7 +388,7 @@ fun CustomerCard(
                     ) {
                         Text(
                             text = customer.kycStatus.name,
-                            color = Navy900,
+                            color = Color(0xFF0A1628), // High-contrast dark background for text
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold
@@ -398,7 +405,7 @@ fun CustomerCard(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
-                        .background(Navy700),
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     val imageSource = customer.selfiePath ?: customer.imageUrl
@@ -412,7 +419,7 @@ fun CustomerCard(
                     } else {
                         Text(
                             text = customer.name.toInitials(),
-                            color = White90,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.titleMedium.copy(fontSize = 15.sp),
                             fontWeight = FontWeight.Bold
                         )
@@ -424,7 +431,7 @@ fun CustomerCard(
                 // Name
                 Text(
                     text = customer.name,
-                    color = White90,
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                     maxLines = 1
                 )
@@ -432,7 +439,7 @@ fun CustomerCard(
                 // IBAN Masked
                 Text(
                     text = "A/C ${customer.maskedIban}",
-                    color = White50,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.labelSmall
                 )
 
@@ -441,21 +448,21 @@ fun CustomerCard(
                 // Balance
                 Text(
                     text = customer.balance.toIndianRupee(),
-                    color = White90,
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 )
 
                 // Type Chip
                 Surface(
                     shape = RoundedCornerShape(50),
-                    color = Navy700,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     modifier = Modifier
                         .padding(vertical = 6.dp)
                         .height(22.dp)
                 ) {
                     Text(
                         text = customer.accountType,
-                        color = White50,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                     )
@@ -467,8 +474,8 @@ fun CustomerCard(
                     Button(
                         onClick = { onKycClick() },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Electric,
-                            contentColor = White90
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(50),
                         contentPadding = PaddingValues(0.dp),
@@ -509,8 +516,8 @@ fun ShimmerGrid() {
         items(6) {
             Card(
                 shape = RoundedCornerShape(20.dp),
-                border = BorderStroke(1.dp, CardStroke),
-                colors = CardDefaults.cardColors(containerColor = Navy800),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
@@ -527,35 +534,35 @@ fun ShimmerGrid() {
                                 .align(Alignment.End)
                                 .size(40.dp, 16.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(Navy700)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Box(
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(CircleShape)
-                                .background(Navy700)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Box(
                             modifier = Modifier
                                 .size(100.dp, 16.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(Navy700)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Box(
                             modifier = Modifier
                                 .size(60.dp, 12.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(Navy700)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Box(
                             modifier = Modifier
                                 .size(80.dp, 20.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(Navy700)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                         )
                     }
                 }
@@ -583,17 +590,17 @@ fun ErrorStateView(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = message,
-            color = White90,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedButton(
             onClick = onRetry,
-            border = BorderStroke(1.dp, Electric),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(50)
         ) {
-            Text("Retry", color = Electric)
+            Text("Retry", color = MaterialTheme.colorScheme.primary)
         }
     }
 }
@@ -610,13 +617,13 @@ fun EmptyStateView(
         Icon(
             imageVector = Icons.Default.Search,
             contentDescription = "Empty",
-            tint = White50,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(64.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = message,
-            color = White50,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium
         )

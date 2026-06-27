@@ -37,7 +37,9 @@ import com.digitalbank.model.BankInfo
 import com.digitalbank.model.Customer
 import com.digitalbank.model.KycStatus
 import com.digitalbank.ui.UiState
-import com.digitalbank.ui.theme.*
+import com.digitalbank.ui.theme.Amber
+import com.digitalbank.ui.theme.Emerald
+import com.digitalbank.ui.theme.Rose
 import com.digitalbank.util.toIndianRupee
 import com.digitalbank.util.toInitials
 
@@ -63,7 +65,7 @@ fun AccountDetailScreen(
                     Text(
                         "Account Details",
                         style = MaterialTheme.typography.titleMedium,
-                        color = White90
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 },
                 navigationIcon = {
@@ -71,16 +73,16 @@ fun AccountDetailScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = White90
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Navy900
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             )
         },
-        containerColor = Navy900
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -90,12 +92,12 @@ fun AccountDetailScreen(
         ) {
             when (val state = customerState) {
                 is UiState.Loading -> {
-                    CircularProgressIndicator(color = Electric)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
                 is UiState.Error -> {
                     Text(
                         text = state.message,
-                        color = Rose,
+                        color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
@@ -155,7 +157,7 @@ fun DetailContent(
 fun HeroCard(customer: Customer) {
     Card(
         shape = RoundedCornerShape(24.dp),
-        border = BorderStroke(1.dp, CardStroke),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
@@ -164,7 +166,10 @@ fun HeroCard(customer: Customer) {
             modifier = Modifier
                 .background(
                     Brush.verticalGradient(
-                        listOf(Navy800, Navy900)
+                        listOf(
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.background
+                        )
                     )
                 )
                 .padding(20.dp)
@@ -178,7 +183,7 @@ fun HeroCard(customer: Customer) {
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .background(Navy700),
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     val imageSource = customer.selfiePath ?: customer.imageUrl
@@ -192,7 +197,7 @@ fun HeroCard(customer: Customer) {
                     } else {
                         Text(
                             text = customer.name.toInitials(),
-                            color = White90,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.titleLarge.copy(fontSize = 26.sp),
                             fontWeight = FontWeight.Bold
                         )
@@ -210,7 +215,7 @@ fun HeroCard(customer: Customer) {
                     ) {
                         Text(
                             text = customer.name,
-                            color = White90,
+                            color = MaterialTheme.colorScheme.onBackground,
                             style = MaterialTheme.typography.titleLarge,
                             maxLines = 1,
                             modifier = Modifier.weight(1f)
@@ -219,7 +224,7 @@ fun HeroCard(customer: Customer) {
 
                     Text(
                         text = "A/C ${customer.maskedIban}",
-                        color = White50,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.labelSmall
                     )
 
@@ -234,7 +239,7 @@ fun HeroCard(customer: Customer) {
                     ) {
                         Text(
                             text = customer.kycStatus.name,
-                            color = Navy900,
+                            color = Color(0xFF0A1628), // Optimized dark text for high-contrast badge visibility
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold
@@ -252,17 +257,17 @@ fun HeroCard(customer: Customer) {
                     ) {
                         Text(
                             text = customer.balance.toIndianRupee(),
-                            color = Electric,
+                            color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold)
                         )
                         Surface(
                             shape = RoundedCornerShape(50),
-                            color = Navy700,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             modifier = Modifier.height(20.dp)
                         ) {
                             Text(
                                 text = customer.accountType,
-                                color = White50,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                             )
@@ -278,8 +283,8 @@ fun HeroCard(customer: Customer) {
 fun InfoSection(customer: Customer) {
     Card(
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, CardStroke),
-        colors = CardDefaults.cardColors(containerColor = Navy800),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -301,13 +306,13 @@ fun InfoRow(label: String, value: String) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label,
-            color = White50,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.labelSmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = value,
-            color = White90,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
         )
     }
@@ -321,8 +326,8 @@ fun BankDetailsCard(
 ) {
     Card(
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, CardStroke),
-        colors = CardDefaults.cardColors(containerColor = Navy800),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -332,7 +337,7 @@ fun BankDetailsCard(
         ) {
             Text(
                 text = "BANK DETAILS",
-                color = White50,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelSmall
             )
 
@@ -356,14 +361,14 @@ fun BankDetailsCard(
                             modifier = Modifier
                                 .size(160.dp, 16.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(Navy700)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .alpha(alphaAnim)
                         )
                         Box(
                             modifier = Modifier
                                 .size(240.dp, 14.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(Navy700)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .alpha(alphaAnim)
                         )
                     }
@@ -376,12 +381,12 @@ fun BankDetailsCard(
                     ) {
                         Text(
                             text = "Failed to resolve · Tap to retry",
-                            color = Rose,
+                            color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
                             text = "IFSC: $ifsc",
-                            color = White50,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -391,17 +396,17 @@ fun BankDetailsCard(
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             text = "${info.bankName} · ${info.branch}",
-                            color = White90,
+                            color = MaterialTheme.colorScheme.onBackground,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
                             text = "IFSC: ${info.ifsc}",
-                            color = White50,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Text(
                             text = "${info.city}, ${info.state}",
-                            color = White50,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -419,8 +424,8 @@ fun KycSelfieCard(
 ) {
     Card(
         shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, CardStroke),
-        colors = CardDefaults.cardColors(containerColor = Navy800),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -430,7 +435,7 @@ fun KycSelfieCard(
         ) {
             Text(
                 text = "KYC SELFIE",
-                color = White50,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelSmall
             )
 
@@ -442,7 +447,7 @@ fun KycSelfieCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(160.dp)
-                        .dashedBorder(1.dp, Navy700, 16.dp)
+                        .dashedBorder(1.dp, MaterialTheme.colorScheme.surfaceVariant, 16.dp)
                         .background(Color.Transparent),
                     contentAlignment = Alignment.Center
                 ) {
@@ -450,13 +455,13 @@ fun KycSelfieCard(
                         Icon(
                             imageVector = Icons.Default.CameraAlt,
                             contentDescription = "Camera",
-                            tint = White50,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(36.dp)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "No selfie yet",
-                            color = White50,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -467,8 +472,8 @@ fun KycSelfieCard(
                 Button(
                     onClick = onKycClick,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Electric,
-                        contentColor = White90
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     shape = RoundedCornerShape(50),
                     modifier = Modifier
@@ -506,9 +511,9 @@ fun KycSelfieCard(
 
                 OutlinedButton(
                     onClick = onKycClick,
-                    border = BorderStroke(1.dp, Electric),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Electric
+                        contentColor = MaterialTheme.colorScheme.primary
                     ),
                     shape = RoundedCornerShape(50),
                     modifier = Modifier
